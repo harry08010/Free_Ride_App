@@ -1,0 +1,45 @@
+<%= javascript "messages/vue.min"%>
+<%= javascript "messages/messages"%>
+<%= stylesheet "messages/messages"%>
+
+<div class="container-fluid ">
+  <div class="chat-page-container row">
+    <div id="chat-panel" class="side-bar col-md-4">
+      <chat-box
+        v-on:click.native="showDetail"
+        v-for="(chat, index) in chats"
+        v-bind:chat="chat"
+        v-bind:index="index"
+        v-bind:key="chat.id"
+      ></chat-box>
+    </div>
+    <div id="right" class="chat-container col-md-8">
+      <div class="input-box">
+        <div class="box-row">
+          <div class="avatar-wrapper">
+            <%= gravatar_for current_user %>
+          </div>
+          <div class="input-area">
+            <div class="input-panel">
+              <textarea id="input-source" name="name"></textarea>
+            </div>
+          </div>
+          <div class="btn-wrapper clearfix">
+            <button class="send-btn btn" id="send-msg">Send Message</button>
+          </div>
+        </div>
+      </div>
+      <div class="msg-container" id="msg-panel">
+        <div class="first-hint" id="first-hint">
+          Select a conversation in the left panel to view detailed messages.
+        </div>
+        <msg-item
+          v-for="msg in msgs"
+          v-bind:msg="msg"
+          v-bind:key="msg.id"
+          v-bind:class="[msg.is_owner ? 'msg-send' : 'msg-receive']"
+        ></msg-item>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,7 @@
+Hello <%= @cer.first_name %>,
+
+<%= @ced.first_name %> <%= @ced.last_name %> has invited you to certificate him/her.
+
+Please click on the link below to certificate him/her:
+
+<%= certificat_url(cer_email: @cer.email, ced_email: @ced.email) %>

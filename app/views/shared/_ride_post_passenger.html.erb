@@ -1,0 +1,50 @@
+<!-- bug: will load multiple times -->
+<%= stylesheet "ride_posts/ride_post"%>
+
+<div class="card ride-post">
+  <div class="card-header">
+    <span class="date-wrapper"><b>Date :</b> <%= ride_post_passenger.date.to_date %> </span>
+    <span class="time-wrapper"><b>Time :</b> <%= ride_post_passenger.time.to_s(:time) %> </span>
+    <span class="post-time">Posted <%= time_ago_in_words(ride_post_passenger.created_at) %> ago.</span>
+  </div>
+  <div class="card-body">
+    <div class="location-wrapper">
+      <span class="from">From : <span class="location"><%= ride_post_passenger.starting_point %></span> </span>
+      <%= octicon "chevron-right" , :height => 26 , :class => "arrow" %>
+      <span class="to">To : <span class="location"><%= ride_post_passenger.destination %></span> </span>
+    </div>
+    <div class="other-info-wrapper">
+      <span class="seats">
+        <span class="title">Available seat(s) : </span>
+        <span class="content"><%= ride_post_passenger.available_seat_number %></span>
+      </span>
+      <% if not ride_post_passenger.note.strip.empty? %>
+        <div class="notes">
+          <span class="title">Notes : </span>
+          <span class="content"><%= ride_post_passenger.note %></span>
+        </div>
+      <% end %>
+    </div>
+    <div class="passenger-status">
+      <span class="title">Status</span>
+      <% if ride_post_passenger.locked %>
+      <% if (@user.approvers.exists? ride_post_passenger.id and @user.applying.exists? ride_post_passenger.id) %>
+      <span class="content badge badge-success">approved</span>
+      <% else %>
+      <span class="content badge badge-danger">rejected</span>
+      <% end %>
+      <% else %>
+      <span class="content badge badge-secondary">pending</span>
+      
+      <% end %>
+    </div>
+    <div class="unapply-button">
+        <%= form_for(current_user.active_apply_relationships.find_by(applier_id: current_user.id),
+        html: { method: :delete }) do |f| %>
+        <%= hidden_field_tag :userid, current_user.id %>
+        <%= hidden_field_tag :postid, ride_post_passenger.id %>
+        <%= f.submit "Unapply", class: "btn btn-default" %>
+        <% end %>
+      </div>
+  </div>
+</div>

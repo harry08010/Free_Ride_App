@@ -1,0 +1,58 @@
+@import "mixins/global.scss";
+
+
+.title{
+  text-align: center;
+  margin-top: 10px;
+  color: $greensea;
+}
+
+.input-group{
+  margin-bottom: 15px;
+  .radio-options{
+    height: 39px;
+    width: 100%;
+    border: 2px solid $silver;
+    border-left: 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 0;
+    .option{
+      display: inline-block;
+      height: 100%;
+      width: 50%;
+      transition: background-color 0.25s;
+      cursor: pointer;
+
+      &:hover{
+        background-color: rgba(26,188,156,0.8);
+        label{
+          color: white;
+        }
+      }
+      &:active{
+        background-color: $greensea;
+      }
+      label{
+        transition: color 0.25s;
+        padding: 0;
+        user-select: none;
+        color: #b2bcc6;
+      }
+    }
+    .option + .option {
+      border-left: 2px solid $silver;
+      border-radius: 0 4px 4px 0;
+    }
+    .selected {
+      background-color: $turquoise;
+      label{
+        color: white;
+      }
+    }
+  }
+}
+
+#edit-form,
+#register-form{
+  text-align: center;
+}

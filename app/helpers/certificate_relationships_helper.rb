@@ -1,0 +1,2 @@
+module CertificateRelationshipsHelper
+end

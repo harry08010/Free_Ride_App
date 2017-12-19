@@ -1,0 +1,12 @@
+<% if logged_in? %>
+<div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+      <h1 class="new-post-title">New Post</h1>
+      <section class="ride-post-form">
+        <%= render 'shared/ride_post_form' %>
+      </section>
+    </div>
+    <div class="col-md-4"></div>
+</div>
+<% end %>

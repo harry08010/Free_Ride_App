@@ -1,0 +1,112 @@
+<!-- bug: will load multiple times -->
+<%= stylesheet "ride_posts/ride_post"%>
+
+<div class="card ride-post">
+  <div class="card-header">
+    <span class="date-wrapper"><b>Date :</b> <%= ride_post.date.to_date %> </span>
+    <span class="time-wrapper"><b>Time :</b> <%= ride_post.time.to_s(:time) %> </span>
+    <span class="post-time">Posted <%= time_ago_in_words(ride_post.created_at) %> ago.</span>
+    <%= link_to "Delete", ride_post_path(ride_post), method: :delete, data: { confirm: "Are you sure to delete the post?" }, class: "delete-btn" %>
+  </div>
+  <div class="card-body">
+    <div class="location-wrapper">
+      <span class="from">From : <span class="location"><%= ride_post.starting_point %></span> </span>
+      <%= octicon "chevron-right" , :height => 26 , :class => "arrow" %>
+      <span class="to">To : <span class="location"><%= ride_post.destination %></span> </span>
+    </div>
+    <div class="other-info-wrapper">
+      <span class="seats">
+        <span class="title">Available seat(s) : </span>
+        <span class="content"><%= ride_post.available_seat_number %></span>
+      </span>
+      <% if not ride_post.note.strip.empty? %>
+        <div class="notes">
+          <span class="title">Notes : </span>
+          <span class="content"><%= ride_post.note %></span>
+        </div>
+      <% end %>
+      <% if !ride_post.locked %>
+      <div class="status">
+        <span class="title">Status</span>
+        <%= form_tag lock_path, method: :get, class: 'content' do %>
+        <%= hidden_field_tag :id, ride_post.id %>
+        <%= submit_tag 'Confirm Post', class: "btn btn-primary btn-embossed", data: {confirm: 'Are you sure you have finish reviewing all applicant?(This action cannot be undon.)'}  %>
+        <% end %>
+      </div>
+      <% else %>
+      <div class="status">
+        <span class="title">Status</span>
+        <span class="content">post confirmed</span>
+      </div>
+      <% end %>
+    </div>
+
+<% if !ride_post.locked %>
+    <div id="accordion" data-children=".item">
+      <div class="item applicant-list">
+        <a class="collapsed title" href="#collapse<%= ride_post.id %>" data-toggle="collapse" aria-expanded="false" aria-controls="collapse<%= ride_post.id %>">
+          Applicant(s) (<%= ride_post.appliers.count %>)
+        </a>
+        <div id="collapse<%= ride_post.id %>" class="collapse" role="tabpanel">
+            <% if ride_post.appliers.any? %>
+            <% ride_post.appliers.all.each do |applier| %>
+            <div class="applicant-card card">
+              <div class="card-body">
+                <div class="card-title">
+                  <%= applier.first_name %> <%= applier.last_name %>
+                  <% applier.certificater.each do |certificater| %>
+                  <% if certificater == current_user %>
+                  certified by you
+                  <% elsif current_user.passengers.include?(certificater) or current_user.drivers.include?(certificater) %>
+                  certified by <%= certificater.first_name %> <%= certificater.last_name %>
+                  <% end %>
+                  <% end %>
+                </div>
+                  <% if !ride_post.approving?(applier) %>
+                    <%= form_for(ride_post.active_approve_relationships.build) do |f| %>
+                    <%= hidden_field_tag :userid, applier.id %>
+                    <%= hidden_field_tag :postid, ride_post.id %>
+                    <%= f.submit "Approve", class: "btn btn-primary" %>
+                    <% end %>
+                  <% else %>
+                    <%= form_for(ride_post.active_approve_relationships.find_by(approved_id: applier.id),
+                    html: { method: :delete }) do |f| %>
+                    <%= hidden_field_tag :userid, applier.id %>
+                    <%= hidden_field_tag :postid, ride_post.id %>
+                    <%= f.submit "Unapprove", class: "btn btn-default" %>
+                    <% end %>
+                  <% end %>
+              </div>
+            </div>
+            <% end %>
+            <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% else %>
+   <div id="accordion" data-children=".item">
+      <div class="item applicant-list">
+        <a class="collapsed title" href="#collapse<%= ride_post.id %>" data-toggle="collapse" aria-expanded="false" aria-controls="collapse<%= ride_post.id %>">
+          Passenger(s) (<%= ride_post.approving.count %>)
+        </a>
+        <div id="collapse<%= ride_post.id %>" class="collapse" role="tabpanel">
+          <% if ride_post.approving.any? %>
+            <% ride_post.approving.all.each do |approving| %>
+            <div class="applicant-card card">
+              <div class="card-body">
+                <div class="card-title">
+                  <%= approving.first_name %> <%= approving.last_name %>
+                </div>
+              </div>
+            </div>
+            <% end %>
+            <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<% end %>

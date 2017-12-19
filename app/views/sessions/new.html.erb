@@ -1,0 +1,25 @@
+<%= stylesheet "welcome" %>
+<%= javascript "welcome" %>
+<% provide(:title, 'Welcome') %>
+
+<div class = "register-container">
+  <h1 id = "title">Sign in</h1>
+  <%= form_for(:session, url: login_path) do |f| %>
+      <%= f.label :email, class: 'input-title' %>
+      <%= f.email_field :email, class: 'form-control', placeholder: "Your Email Address" %>
+
+      <%= f.label :password, class: 'input-title'%>
+      <%= f.password_field :password, class: 'form-control', placeholder: "Your Password" %>
+      <br>
+      <div class = "sign-in">
+        <%= f.submit "Sign in", id: "Sign in", class: "btn btn-embossed btn-primary" %>
+    </div>
+  <% end %>
+
+    <div class = "sign-up">
+      <p>Don't have an account? <a href="<%= signup_path %>">Sign up now!</a></p>
+    </div>
+
+  </form>
+
+</div>

@@ -1,0 +1,53 @@
+<%= stylesheet "users/new"%>
+<%= javascript "users/new"%>
+<% provide(:title, "Edit user") %>
+
+  <h3 class="title">Update your information</h3>
+<div class="row form-container">
+  <div class="col-lg-4"></div>
+  <%= form_for(@user, :html => { id: "edit-form", class: "col-lg-4" } ) do |f| %>
+  <%= render 'shared/error_messages', object: f.object %>
+  <div class="input-group">
+    <span class="input-group-addon">First Name</span>
+    <%= f.text_field :first_name, class: "form-control", placeholder: "First Name" %>
+  </div>
+  <div class="input-group">
+    <span class="input-group-addon">Last Name</span>
+    <%= f.text_field :last_name, class: "form-control", placeholder: "Last Name" %>
+  </div>
+
+  <div class="input-group">
+    <span class="input-group-addon">Status</span>
+    <div class="radio-options">
+      <span class="option">
+        <%= f.label :status, "Driver", class: "text-uppercase radio-inline" %>
+        <%= f.radio_button :status, true, id: "driver", class: "d-none" %>
+      </span>
+      <span class="option">
+        <%= f.label :status, "Passenger", class: "text-uppercase radio-inline" %>
+        <%= f.radio_button :status, false, id: "passenger", class: "d-none" %>
+      </span>
+    </div>
+  </div>
+
+  <div class="input-group">
+    <span class="input-group-addon">NickName</span>
+    <%= f.text_field :nickname, class: "form-control", placeholder: "Nickname" %>
+  </div>
+  <div class="input-group">
+    <span class="input-group-addon">Password</span>
+    <%= f.password_field :password, class: "form-control", placeholder: "Password" %>
+  </div>
+  <div class="input-group">
+    <span class="input-group-addon">Password Confirm</span>
+    <%= f.password_field :password_confirmation, class: "form-control", placeholder: "Password Confirmation" %>
+  </div>
+  <div class="input-group">
+    <span class="input-group-addon">Phone</span>
+    <%= f.telephone_field :phone, class: "form-control", placeholder: "Phone Number" %>
+  </div>
+
+  <%= f.submit "Update my account", class: "btn btn-embossed btn-primary" %>
+  <% end %>
+  <div class="col-lg-4"></div>
+</div>

@@ -1,0 +1,68 @@
+<%= stylesheet "users/show"%>
+
+<% provide(:title, 'Home') %>
+
+<div class="row">
+  <aside class="user-info">
+    <section class="header">
+        <%= gravatar_for @user %>
+        <span class="user-name"><%= @user.first_name %> <%= @user.last_name %> (<%= @user.nickname %>)</span>
+    </section>
+    <section class="content">
+      <div class="change-status info-row">
+        <div class="title">Current Status :</div>
+        <div class="info">
+          <% if current_user.status %>
+          <span class="badge badge-pill badge-primary">Driver</span>
+          <% else %>
+          <span class="badge badge-pill badge-primary">Passenger</span>
+          <% end %>
+          <a href="/change_status" class="btn btn-primary btn-embossed">switch status</a>
+        </div>
+      </div>
+      <div class="certification info-row">
+        <div class="title">Certify through friends :</div>
+        <%= form_for(@user.active_certificate_relationships.build) do |f| %>
+          <%= hidden_field_tag :ced_email, @user.email %>
+          <%= email_field_tag :cer_email, nil, class: 'form-control', placeholder: 'Enter your friend\'s email' %>
+          <%= f.submit "Submit", class: "btn btn-primary btn-embossed cer-btn" %>
+        <% end %>
+      </div>
+    </section>
+
+  </aside>
+
+
+
+  <div class="ride-post-info col-md-7">
+    <% if @user.status %>
+      <% if @user.ride_posts.any? %>
+        <h3>Posted Rides (<%= @user.ride_posts.count %>)</h3>
+        <div class="ride-posts">
+          <%= render partial: "shared/ride_post", collection: @ride_posts %>
+        </div>
+        <%= will_paginate @ride_posts %>
+      <% else %>
+        <h3>Posted Rides (<%= @user.ride_posts.count %>)</h3>
+        <div class="empty-hint">
+          <div >You haven't post any free rides yet!</div>
+          <div >Try clicking "New Posts" in the navigation bar.</div>
+        </div>
+      <% end %>
+    <% else %>
+      <% if @user.applying.any? %>
+        <h3>Applied Rides (<%= @ride_post_passengers.count %>)</h3>
+        <div class="ride-posts">
+          <%= render partial: "shared/ride_post_passenger", collection: @ride_post_passengers %>
+        </div>
+      <% else %>
+        <h3>Applied Rides (<%= @user.applying.count %>)</h3>
+        <div class="empty-hint">
+          <div >You haven't applied to any free ride posts yet!</div>
+          <div >Try searching them.</div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+
+</div>

@@ -1,0 +1,9 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  approver_id: 1
+  approved_id: 1
+
+two:
+  approver_id: 1
+  approved_id: 1

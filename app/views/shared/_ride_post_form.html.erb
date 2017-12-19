@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+
+<% provide(:title, 'New Post') %>
+
+<%= form_for(@ride_post) do |f| %>
+  <%= render 'shared/error_messages', object: f.object %>
+  <div class="input-group">
+    <span class="input-group-addon">Start From: </span>
+    <%= f.text_field :starting_point, class: "form-control", onFocus:"geolocate()" %>
+  </div>
+  <br>
+  <div class="input-group">
+    <span class="input-group-addon">Go to: </span>
+    <%= f.text_field :destination, class: "form-control", onFocus:"geolocate()" %>
+  </div>
+  <br>
+  <div class="input-group">
+    <span class="input-group-addon">Available Seat(s): </span>
+    <%= f.text_field :available_seat_number, class: "form-control", placeholder: "e.g. 1,2,3" %>
+  </div>
+  <br>
+  <div class="input-group">
+      <span class="input-group-addon">Date: </span>
+    <%= f.date_field :date, class: "form-control", placeholder: "e.g. pets allowed" %>
+  </div>
+  <br>
+  <div class="input-group">
+      <span class="input-group-addon">Time: </span>
+    <%= f.time_field :time, class: "form-control", placeholder: "e.g. pets allowed" %>
+  </div>
+  <br>
+  <div class="input-group">
+      <span class="input-group-addon">Note: </span>
+    <%= f.text_area :note, class: "form-control", placeholder: "e.g. pets allowed" %>
+  </div>
+  <br>
+  <%= f.submit "Post", class: "btn btn-embossed btn-primary new-post-button" %>
+
+<% end %>
+
+
+<table id="address" class="d-none">
+  <tr>
+    <td class="label">Street address</td>
+    <td class="slimField"><input class="field" id="street_number"
+          disabled="true"></input></td>
+    <td class="wideField" colspan="2"><input class="field" id="route"
+          disabled="true"></input></td>
+  </tr>
+  <tr>
+    <td class="label">City</td>
+    <td class="wideField" colspan="3"><input class="field" id="locality"
+          disabled="true"></input></td>
+  </tr>
+  <tr>
+    <td class="label">State</td>
+    <td class="slimField"><input class="field"
+          id="administrative_area_level_1" disabled="true"></input></td>
+    <td class="label">Zip code</td>
+    <td class="wideField"><input class="field" id="postal_code"
+          disabled="true"></input></td>
+  </tr>
+  <tr>
+    <td class="label">Country</td>
+    <td class="wideField" colspan="3"><input class="field"
+          id="country" disabled="true"></input></td>
+  </tr>
+</table>
+<div id="current"></div>
+<div id="map"></div>
+<!--
+<script src="//maps.google.com/maps/api/js?key=AIzaSyBl8BKgQlpPGuRiXGUlu9oLMfBP2oewLUQ"></script>
+<script src="//cdn.rawgit.com/mahnunchik/markerclustererplus/master/dist/markerclusterer.min.js"></script>
+<script src='//cdn.rawgit.com/printercu/google-maps-utility-library-v3-read-only/master/infobox/src/infobox_packed.js' type='text/javascript'></script>
+-->
+
+<% content_for :body_javascript do %>
+<script type = "text/javascript">
+var placeSearch, autocomplete_origin;
+//Marker place for map
+var marker, map, geolocation;
+//Start point and End point
+var start_point, end_point;
+var componentForm = {
+  street_number: 'short_name',
+  route: 'long_name',
+  locality: 'long_name',
+  administrative_area_level_1: 'short_name',
+  country: 'long_name',
+  postal_code: 'short_name'
+};
+
+function initialize() {
+  initMap();
+  initAutocomplete();
+
+}
+function initMap(){
+  //direction service
+  directionsService = new google.maps.DirectionsService;
+  directionsDisplay = new google.maps.DirectionsRenderer;
+
+	var uluru = {lat: 0, lng: 0};
+  map = new google.maps.Map(document.getElementById('map'), {
+		zoom: 13,
+		center: uluru
+	});
+  //initialize marker
+  marker = new google.maps.Marker({
+		//position: uluru,
+    map: map,
+    title: 'driver',
+    //icon: 'driver.png',
+    animation: google.maps.Animation.DROP,
+    draggable: true
+  });
+    //when marker stops
+  google.maps.event.addListener(marker, 'dragend', function(evt){
+    document.getElementById('current').innerHTML = '<p>Marker dropped: Current Lat: ' + evt.latLng.lat().toFixed(3) + ' Current Lng: ' + evt.latLng.lng().toFixed(3) + '</p>';
+});
+	//when dragging marker
+	google.maps.event.addListener(marker, 'dragstart', function(evt){
+    document.getElementById('current').innerHTML = '<p>Currently dragging marker...</p>';
+});
+	//To see traffic layer and direction display
+  var trafficLayer = new google.maps.TrafficLayer();
+	trafficLayer.setMap(map);
+  directionsDisplay.setMap(map);
+  //first time into map
+  currentLocation();
+
+}
+function initAutocomplete() {
+  // Create the autocomplete object, restricting the search to geographical
+  // location types.
+  autocomplete_origin = new google.maps.places.Autocomplete(
+      /** @type {!HTMLInputElement} */(document.getElementById('ride_post_starting_point')),
+      {types: ['geocode']});
+  autocomplete_destination = new google.maps.places.Autocomplete(
+      /** @type {!HTMLInputElement} */(document.getElementById('ride_post_destination')),
+      {types: ['geocode']});
+
+  // When the user selects an address from the dropdown, populate the address
+  // fields in the form.
+  autocomplete_origin.addListener('place_changed', fillInAddress_origin);
+  autocomplete_destination.addListener('place_changed', fillInAddress_destination);
+}
+
+function fillInAddress_origin() {
+  // Get the place details from the autocomplete object.
+  var place = autocomplete_origin.getPlace();
+  //Get the destination
+  start_point = new google.maps.LatLng(place.geometry.location.lat(), place.geometry.location.lng());
+  if (end_point){
+    calculateAndDisplayRoute(directionsService, directionsDisplay);
+  }
+  for (var component in componentForm) {
+    document.getElementById(component).value = '';
+    document.getElementById(component).disabled = false;
+  }
+  // Get each component of the address from the place details
+  // and fill the corresponding field on the form.
+  for (var i = 0; i < place.address_components.length; i++) {
+    var addressType = place.address_components[i].types[0];
+    if (componentForm[addressType]) {
+      var val = place.address_components[i][componentForm[addressType]];
+      document.getElementById(addressType).value = val;
+    }
+  }
+}
+function fillInAddress_destination() {
+  // Get the place details from the autocomplete object.
+  var place = autocomplete_destination.getPlace();
+  //Get the destination
+  end_point = new google.maps.LatLng(place.geometry.location.lat(), place.geometry.location.lng());
+  //direction service calculate Route
+  calculateAndDisplayRoute(directionsService, directionsDisplay);
+  for (var component in componentForm) {
+    document.getElementById(component).value = '';
+    document.getElementById(component).disabled = false;
+  }
+  // Get each component of the address from the place details
+  // and fill the corresponding field on the form.
+  for (var i = 0; i < place.address_components.length; i++) {
+    var addressType = place.address_components[i].types[0];
+    if (componentForm[addressType]) {
+      var val = place.address_components[i][componentForm[addressType]];
+      document.getElementById(addressType).value = val;
+    }
+  }
+}
+
+// Bias the autocomplete object to the user's geographical location,
+// as supplied by the browser's 'navigator.geolocation' object.
+function geolocate() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      var geolocation = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
+      var circle = new google.maps.Circle({
+        center: geolocation,
+        radius: position.coords.accuracy
+      });
+      autocomplete_origin.setBounds(circle.getBounds());
+      autocomplete_destination.setBounds(circle.getBounds());
+    });
+  }
+}
+//first time into map
+function currentLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      geolocation = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
+      //change the position center and map center
+			marker.setPosition(geolocation);
+      map.setCenter(geolocation);
+      //start_point = new google.maps.LatLng(geolocation.lat, geolocation.lng);
+    });
+  }
+
+}
+//simple direction service
+function calculateAndDisplayRoute(directionsService, directionsDisplay) {
+  directionsService.route({
+    origin: start_point,
+    destination: end_point,
+    travelMode: 'DRIVING'
+  }, function(response, status) {
+    if (status === 'OK') {
+      directionsDisplay.setDirections(response);
+    } else {
+      window.alert('Directions request failed due to ' + status);
+    }
+  });
+}
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBZKrRC5wcbKpgOVEC2yjeMGm94EpGgFkU&libraries=places&callback=initialize"
+    async defer></script>
+<% end %>

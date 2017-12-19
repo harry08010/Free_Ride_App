@@ -1,0 +1,101 @@
+@import "mixins/global.scss";
+
+.container{
+  margin-left: 20px;
+  margin-right: 20px;
+  width: auto;
+  max-width: none;
+}
+
+.user-info{
+  display: inline-block;
+  border: 1px solid $color-border;
+  position: fixed;
+  top: 150px;
+  left: 30px;
+  width: 450px;
+  .header{
+    margin-top: 20px;
+    margin-left: 50px;
+    margin-right: 50px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid $color-border;
+    .gravatar {
+      @include avatar(70px);
+      margin-right: 10px;
+    }
+    .user-name {
+      display: inline-block;
+      font-size: 2rem;
+      line-height: 70px;
+      vertical-align: bottom;
+      max-width: 350px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+  .content{
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 0 20px;
+    .info-row{
+      .title{
+        font-size: 1rem;
+        font-weight: 500;
+        text-align: left;
+        margin-bottom: 10px;
+      }
+    }
+    .change-status{
+      .info{
+        font-size: 1.4rem;
+        .badge{
+          margin-right: 10px;
+        }
+      }
+    }
+    .certification{
+      .new_certification_relationship{
+        display: inline-block;
+      }
+      input{
+        display: inline-block;
+        width: 200px;
+        margin-right: 10px;
+      }
+      .cer-btn{
+        width: 100px;
+        vertical-align: bottom;
+      }
+    }
+  }
+}
+
+.ride-post-info{
+  text-align: left;
+  margin-left: 500px;
+}
+
+.new-post{
+  position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top:-250px;
+    margin-left:-250px;
+    width:1500px;
+    opacity:0.9;
+}
+
+.new-post-title{
+  text-align: center;
+}
+
+.new-post-button{
+  margin-left:200px;
+}
+
+.empty-hint{
+  font-size: 1.3rem;
+  margin-top: 50px;
+}

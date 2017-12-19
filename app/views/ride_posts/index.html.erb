@@ -1,0 +1,57 @@
+<%= stylesheet "ride_posts/ride_post"%>
+<%= stylesheet "ride_posts/ride_post_search"%>
+
+<% @ride_posts.each do |ride_post| %>
+<div class="card ride-post">
+  <div class="card-header">
+    <span class="date-wrapper"><b>Date :</b> <%= ride_post.date.to_date %> </span>
+    <span class="time-wrapper"><b>Time :</b> <%= ride_post.time.to_s(:time) %> </span>
+    <span class="post-time">Posted <%= time_ago_in_words(ride_post.created_at) %> ago.</span>
+  </div>
+  <div class="card-body">
+    <div class="location-wrapper">
+      <span class="from">From : <span class="location"><%= ride_post.starting_point %></span> </span>
+      <%= octicon "chevron-right" , :height => 26 , :class => "arrow" %>
+      <span class="to">To : <span class="location"><%= ride_post.destination %></span> </span>
+    </div>
+    <div class="other-info-wrapper">
+      <span class="seats">
+        <span class="title">Available seat(s) : </span>
+        <span class="content"><%= ride_post.available_seat_number %></span>
+      </span>
+      <% if not ride_post.note.strip.empty? %>
+        <div class="notes">
+          <span class="title">Notes : </span>
+          <span class="content"><%= ride_post.note %></span>
+        </div>
+      <% end %>
+    </div>
+
+    <span>
+    <% if logged_in? and !current_user.applying?(ride_post) %>
+      <div>
+        <%= form_for(current_user.active_apply_relationships.build) do |f| %>
+        <%= hidden_field_tag :userid, current_user.id %>
+        <%= hidden_field_tag :postid, ride_post.id %>
+        <%= f.submit "Apply", class: "btn btn-primary" %>
+        <% end %>
+      </div>
+    <% else %>
+      <div>
+        <%= form_for(current_user.active_apply_relationships.find_by(applier_id: current_user.id),
+        html: { method: :delete }) do |f| %>
+        <%= hidden_field_tag :userid, current_user.id %>
+        <%= hidden_field_tag :postid, ride_post.id %>
+        <%= f.submit "Unapply", class: "btn btn-default unapply-button" %>
+        <% end %>
+      </div>
+    <% end %>
+    </span>
+  </div>
+</div>
+
+<% end %>
+
+<% if @ride_posts.blank? %>
+  <h4>No posts are available.</h4>
+<% end %>

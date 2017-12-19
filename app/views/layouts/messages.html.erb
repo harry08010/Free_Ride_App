@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Messages</title>
+    <%= stylesheet_link_tag 'application', media: 'all' %>
+    <%= yield(:head_stylesheet) %>
+  </head>
+  <body>
+    <%= render 'layouts/header' %>
+    <%= yield %>
+    <%= javascript_include_tag 'application' %>
+    <script>
+    window.onload = function () {
+      _currentUserId = <%= current_user.id %>;
+      _currentUserAvatar = '<%= gravatar_for_id current_user.id, current_user.gender %>'
+      _femaleAvatars = []
+      _maleAvatars = []
+      <% (0..113).each do |n| %>
+        _femaleAvatars.push('<%= gravatar_for_id n, "female" %>')
+      <% end %>
+      <% (0..128).each do |n| %>
+        _maleAvatars.push('<%= gravatar_for_id n, "male" %>')
+      <% end %>
+    }
+    </script>
+    <%= yield(:body_javascript) %>
+  </body>
+</html>

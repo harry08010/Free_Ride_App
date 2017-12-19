@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  starting_point: MyString
+  destination: MyString
+  available_seat_number: 
+  date: 2017-10-29 16:34:49
+  user: one
+
+two:
+  starting_point: MyString
+  destination: MyString
+  available_seat_number: 
+  date: 2017-10-29 16:34:49
+  user: two

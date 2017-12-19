@@ -1,0 +1,11 @@
+<h1>Free Ride</h1>
+
+<p>Hello <%= @cer.first_name %>,</p>
+
+<p>
+<%= @ced.first_name %> <%= @ced.last_name %> has invited you to certificate him/her.
+
+Please click on the link below to certificate him/her:
+</p>
+
+<%= link_to "Certificate", certificat_url(cer_email: @cer.email, ced_email: @ced.email) %>
