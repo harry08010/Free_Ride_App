@@ -7,8 +7,10 @@ end
 
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5.1.4'
+gem 'rails'
+group :production do
 gem 'pg'
+end
 gem 'bcrypt', '3.1.11'
 gem 'faker',                   '1.7.3'
 gem 'will_paginate',           '3.1.5'

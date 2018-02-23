@@ -136,7 +136,7 @@ GEM
     octicons_helper (4.0.7)
       octicons
       rails
-    pg (1.0.0)
+    pg (0.21.0)
     public_suffix (3.0.0)
     puma (3.10.0)
     rack (2.0.3)
@@ -267,7 +267,7 @@ DEPENDENCIES
   octicons_helper
   pg
   puma (~> 3.7)
-  rails (~> 5.1.4)
+  rails
   rails-controller-testing
   rspec-rails (~> 3.6)
   sass-rails (~> 5.0)
